@@ -14,7 +14,7 @@ const RestartButton = ({
     buttonRef.current?.blur();
     handleRestart();
   };
-t a
+
   return (
     <button
       tabIndex={-1} // to prevent focus
