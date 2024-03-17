@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import GeneratedWords from "./components/GeneratedWords";
+import RestartButton from "./components/RestartButton";
+import Results from "./components/Results";
+import UserTypings from "./components/UserTypings";
+import useEngine from "./hooks/useEngine";
+import { calculateAccuracyPercentage } from "./utils/functions";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const { words, typed, timeLeft, errors, state, restart, totalTyped } =
+    useEngine();
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="" >
+      <CountdownTimer timeLeft={timeLeft} />
+      <WordsContainer>
+        <GeneratedWords key={words} words={words} />
+        {/* User typed characters will be overlayed over the generated words */}
+        <UserTypings
+          className="absolute inset-0"
+          words={words}
+          userInput={typed}
+        />
+      </WordsContainer>
+      <RestartButton
+        className={"mx-auto mt-10 text-slate-500"}
+        onRestart={restart}
+      />
+      <Results
+        className="mt-10"
+        state={state}
+        errors={errors}
+        accuracyPercentage={calculateAccuracyPercentage(errors, totalTyped)}
+        total={totalTyped}
+      />
+    </div>
+  );
+};
 
-export default App
+const WordsContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="relative text-3xl max-w-xl leading-relaxed break-all mt-3">
+      {children}
+    </div>
+  );
+};
+
+const CountdownTimer = ({ timeLeft }: { timeLeft: number }) => {
+  return <h2 className="text-primary-400 font-medium">Time: {timeLeft}</h2>;
+};
+
+export default App;
